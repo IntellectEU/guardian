@@ -1,6 +1,10 @@
 import { Guardians } from '@helpers/guardians';
 import { Request, Response, Router, NextFunction } from 'express';
+<<<<<<< HEAD
 import { ISchema, UserRole, SchemaHelper, SchemaEntity, StatusType } from '@guardian/interfaces';
+=======
+import { ISchema, UserRole, SchemaHelper, StatusType } from '@guardian/interfaces';
+>>>>>>> 4f7b0b97 (feat: api enhancements)
 import { permissionHelper } from '@auth/authorization-helper';
 import JSZip from 'jszip';
 import { AuthenticatedRequest, Logger, RunFunctionAsync } from '@guardian/common';
@@ -269,7 +273,11 @@ function prepareSchemaPagination(req, user) {
 schemaAPI.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const user = req.user;
+<<<<<<< HEAD
         let { guardians, pageIndex, pageSize, owner } = prepareSchemaPagination(req, user);
+=======
+        const { guardians, pageIndex, pageSize, owner } = prepareSchemaPagination(req, user);
+>>>>>>> 4f7b0b97 (feat: api enhancements)
         let topicId = null;
         const policyId = req.query?.policyId;
         if (policyId) {
@@ -293,7 +301,11 @@ schemaAPI.get('/:topicId', async (req: AuthenticatedRequest, res: Response, next
     try {
         const user = req.user;
         const { topicId } = req.params;
+<<<<<<< HEAD
         let { guardians, pageIndex, pageSize, owner } = prepareSchemaPagination(req, user);
+=======
+        const { guardians, pageIndex, pageSize, owner } = prepareSchemaPagination(req, user);
+>>>>>>> 4f7b0b97 (feat: api enhancements)
         const { schemas, count } = await guardians.getSchemasByOwner(owner, topicId, pageIndex, pageSize);
         SchemaHelper.updatePermission(schemas, user.did);
         return res.setHeader('X-Total-Count', count).json(toOld(schemas));
