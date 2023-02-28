@@ -17,7 +17,21 @@ services:
       ME_CONFIG_SITE_BASEURL: /mongo-admin
     depends_on:
       - mongo
-
+      
+  mongo-metrics:
+    image: mongo-express:1.0.0-alpha.4
+    expose:
+      - 8083
+    ports:
+      - "27018:27017"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_SITE_BASEURL: /mongo-admin
+      ME_CONFIG_MONGODB_AUTH_DATABASE: metrics
+    depends_on:
+      - mongo
+      
   ipfs-node:
     image: ipfs/kubo:v0.18.1
     ports:
