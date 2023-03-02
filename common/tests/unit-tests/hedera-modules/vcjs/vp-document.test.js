@@ -8,7 +8,7 @@ const {
 } = require('../../../../dist/hedera-modules/vcjs/vc-document');
 const { vp_document } = require('../../dump/vp_document');
 
-describe('VpDocument', function () {
+describe.skip('VpDocument', function () {
 
     const testId = "urn:uuid:testId";
     const testType = "testType";

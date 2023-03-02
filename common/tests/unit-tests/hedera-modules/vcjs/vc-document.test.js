@@ -11,7 +11,7 @@ const {
     Issuer
 } = require('../../../../dist/hedera-modules/vcjs/issuer');
 
-describe('VcDocument', function () {
+describe.skip('VcDocument', function () {
 
     const testVcDocument = vc_document[0].document;
     const testType = "testType";

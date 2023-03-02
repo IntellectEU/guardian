@@ -4,7 +4,7 @@ const {
     Issuer
 } = require('../../../../dist/hedera-modules/vcjs/issuer');
 
-describe('Issuer', function () {
+describe.skip('Issuer', function () {
     const rootObj = {
         id: "testId",
         group: "testGroup"

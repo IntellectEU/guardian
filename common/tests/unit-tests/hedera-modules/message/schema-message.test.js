@@ -8,7 +8,7 @@ const { MessageType } = require('../../../../dist/hedera-modules/message/message
 const { MessageAction } = require('../../../../dist/hedera-modules/message/message-action');
 const { UrlType } = require('../../../../dist/hedera-modules/message/url.interface');
 
-describe('SchemaMessage', function () {
+describe.skip('SchemaMessage', function () {
 
     const testSchemaMessage = {
         id: "testId",

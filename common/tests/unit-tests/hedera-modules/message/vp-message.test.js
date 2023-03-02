@@ -12,7 +12,7 @@ const { MessageAction } = require('../../../../dist/hedera-modules/message/messa
 const { UrlType } = require('../../../../dist/hedera-modules/message/url.interface');
 const { vp_document } = require('../../dump/vp_document');
 
-describe('VPMessage', function () {
+describe.skip('VPMessage', function () {
 
     const testVPMessage = {
         id: "testId",

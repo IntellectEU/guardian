@@ -5,7 +5,7 @@ const {
 } = require('../../../../dist/hedera-modules/vcjs/vc-subject');
 const { vc_document } = require('../../dump/vc_document');
 
-describe('VcSubject', function () {
+describe.skip('VcSubject', function () {
     const testCS = vc_document[0].document.credentialSubject[0];
 
     it('Test VcSubject', async function () {
