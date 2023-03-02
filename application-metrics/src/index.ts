@@ -1,22 +1,27 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 
-import natsSubscriberService from './services/nats-subscriber.service';
+import { initializeNats, natsSubscriberService } from './services/nats-subscriber.service';
 import { Webhook } from './entities/webhook';
 import initializeOrm from './db/orm';
 import validate from './middlewares/validation';
 import { webhookSchema } from './middlewares/validation/schemas/webhook';
 import createError from 'http-errors';
-import { ObjectId } from "@mikro-orm/mongodb";
+import { ObjectId } from '@mikro-orm/mongodb';
+
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 
 const port = process.env.PORT || 5011;
 
 (async () => {
   console.log('Listening NATs');
   await natsSubscriberService();
+
+  const nc = await initializeNats();
+  const eventData = { message: 'Hello, world!' };
+  nc.publish('foo', JSON.stringify(eventData));
 })();
 
 app.get('/health', (req, res) => {
@@ -48,10 +53,10 @@ app.get('/webhooks', async (req: Request, res: Response, next: NextFunction) => 
 });
 
 app.delete('/webhooks/:id', async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const orm = await initializeOrm();
   const em = orm.em.fork();
-  const webhook = await em.findOne(Webhook, { _id: new ObjectId(id) });
+  const webhook = await em.findOne(Webhook, {_id: new ObjectId(id)});
 
   if (!webhook) {
     return createError(404, 'Webhook is active.')
@@ -65,7 +70,7 @@ app.delete('/webhooks/:id', async (req: Request, res: Response, next: NextFuncti
 
 // tslint:disable-next-line:handle-callback-err
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    return res.status(err?.status || 500).json({ code: err?.status || 500, message: err.message })
+  return res.status(err?.status || 500).json({code: err?.status || 500, message: err.message})
 })
 
 app.listen(port, () => {

@@ -1,4 +1,4 @@
-import { connect, Payload, Subscription } from 'ts-nats';
+import { connect, Subscription } from 'ts-nats';
 
 const externalMessageEvents = [
   'external-events.token_minted',
@@ -8,16 +8,30 @@ const externalMessageEvents = [
   'external-events.ipfs_before_upload_content',
   'external-events.ipfs_after_read_content',
   'external-events.ipfs_loaded_file',
-]
+  'foo',
+];
 
-const natsSubscriberService = async () => {
-  const nc = await connect({ servers: ['localhost:8222'], payload: Payload.JSON, });
+export const initializeNats = async () => {
+  const nc = await connect({ servers: ['0.0.0.0:4222'] });
+// Close the connection when finished
+  nc.on('close', () => {
+    console.log('Connection to NATS closed');
+  });
 
+  return nc;
+}
+
+export const natsSubscriberService = async () => {
+  const nc = await initializeNats();
   const subscriptions: Subscription[] = [];
 
   for (const subject of externalMessageEvents) {
-    const sub = await nc.subscribe(subject, (msg: any) => {
-      console.log(`Received message on ${subject}:`, msg.data);
+    const sub = await nc.subscribe(subject, (err, msg: any) => {
+      if (err) {
+        return console.log(err);
+      }
+      console.log(`Received message on ${subject}:`, JSON.parse(msg.data));
+      // Send message data to webhooks
     });
     subscriptions.push(sub);
   }
@@ -32,5 +46,3 @@ const natsSubscriberService = async () => {
     console.log('Unsubscribed and disconnected from NATS');
   });
 }
-
-export default natsSubscriberService;
