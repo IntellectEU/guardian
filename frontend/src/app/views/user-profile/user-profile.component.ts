@@ -48,6 +48,9 @@ export class UserProfileComponent implements OnInit {
     vcDocument?: any;
     standardRegistries?: IUser[];
 
+    public innerWidth: any;
+    public innerHeight: any;
+
     hederaForm = this.fb.group({
         standardRegistry: ['', Validators.required],
         id: ['', Validators.required],
@@ -105,6 +108,8 @@ export class UserProfileComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.innerWidth = window.innerWidth;
+        this.innerHeight = window.innerHeight;
         this.loading = true;
         this.loadDate();
         this.update();
@@ -309,15 +314,36 @@ export class UserProfileComponent implements OnInit {
     }
 
     createRetireRequest() {
-        const dialogRef = this.dialog.open(RetireTokenDialogComponent, {
-            width: '800px',
-            panelClass: 'g-dialog',
-            disableClose: true,
-            autoFocus: false,
-            data: {
-                tokens: this.tokens,
-            },
-        });
+
+        let dialogRef;
+        if (this.innerWidth <= 810) {
+            dialogRef = this.dialog.open(RetireTokenDialogComponent, {
+                width: `${this.innerWidth.toString()}px`,
+                maxWidth: '100vw',
+                height: `${this.innerHeight - 125}px`, // CHANGE THE 125 TO THE HEADER HEIGHT VARIABLE
+                position: {
+                    'bottom': '0'
+                },
+                panelClass: 'g-dialog',
+                hasBackdrop: true, // Shadows beyond the dialog
+                closeOnNavigation: true,
+                autoFocus: false,
+                data: {
+                    tokens: this.tokens,
+                },
+            });
+        } else {
+            dialogRef = this.dialog.open(RetireTokenDialogComponent, {
+                width: '800px',
+                panelClass: 'g-dialog',
+                disableClose: true,
+                autoFocus: false,
+                data: {
+                    tokens: this.tokens,
+                },
+            });
+        }
+        
         this.loading = false;
         dialogRef.afterClosed().subscribe(async (result) => {
             if (result) {
