@@ -29,6 +29,9 @@ export class TokenDialog {
     token: any = null;
     valid: boolean = true;
     readonly: boolean = false;
+
+    public innerWidth: any;
+    public innerHeight: any;
     
     constructor(
         public dialogRef: MatDialogRef<TokenDialog>,
@@ -56,6 +59,8 @@ export class TokenDialog {
     }
 
     ngOnInit() {
+        this.innerWidth = window.innerWidth;
+        this.innerHeight = window.innerHeight;
         this.started = true;
     }
 
