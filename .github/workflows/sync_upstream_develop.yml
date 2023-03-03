@@ -27,10 +27,10 @@ jobs:
         target_repo_token: ${{ secrets.GITHUB_TOKEN }}
         upstream_sync_repo: ${{ vars.UPSTREAM_REPOSITORY }}
         upstream_sync_branch: ${{ env.BRANCH }}
-        # upstream_pull_args: --tags
+        upstream_pull_args: --unshallow
         # target_branch_push_args: --tags
         git_config_pull_rebase: true
-        shallow_since: 2 hours ago
+        #shallow_since: 2 hours ago
 
     - name: New commits found
       if: steps.sync.outputs.has_new_commits == true
