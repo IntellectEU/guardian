@@ -22,6 +22,7 @@ jobs:
         token: ${{ secrets.WORKFLOW_TOKEN }}
     
     - name: Upstream Sync
+      id: sync
       uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
       with:
         target_sync_branch: ${{ env.BRANCH }}
@@ -34,6 +35,5 @@ jobs:
         git_config_pull_rebase: true
         #shallow_since: 2 hours ago
 
-    - name: New commits found
+    - run: echo "New commits found"
       if: steps.sync.outputs.has_new_commits == true
-      run: echo "New commits found"
