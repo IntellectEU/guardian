@@ -30,3 +30,8 @@ jobs:
         # upstream_pull_args: --tags
         # target_branch_push_args: --tags
         git_config_pull_rebase: true
+        shallow_since: 2 hours ago
+
+    - name: New commits found
+      if: steps.sync.outputs.has_new_commits == true
+      run: echo "New commits found"
