@@ -10,13 +10,20 @@ vault_up: vault_keygen distribute_keys cfgen
 	@sleep 10
 	@./vault/hashicorp/scripts/vault/vault_init.sh
 
+vault_dev_up: cfgen
+	@docker-compose -f ./vault/hashicorp/docker-compose.yaml up -d
+	@sleep 10
+	@./vault/hashicorp/scripts/vault/vault_init.sh
+
 vault_down:
 	@docker-compose -f ./vault/hashicorp/docker-compose.yaml down -v
+
+vault_destroy: vault_down clean_keys
 
 vault_restart: vault_down vault_up
 
 distribute_keys:
-	@./vault/scripts/keygen/keystor.sh distribute
+	@./vault/hashicorp/scripts/keygen/keystore.sh distribute
 
 clean_keys:
-	@./vault/scripts/keygen/keystor.sh clean
+	@./vault/hashicorp/scripts/keygen/keystore.sh clean
