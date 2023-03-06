@@ -21,25 +21,10 @@ WORKER_TLS_DEST=./worker-service/tls/vault
 distribute() {
     mkdir -p $AUTH_TLS_DEST
     cp -rf $AUTH_TLS_REPOSITORY $AUTH_TLS_DEST
-
-    mkdir -p $GUARDIAN_TLS_DEST
-    cp -rf $GUARDIAN_TLS_REPOSITORY $GUARDIAN_TLS_DEST
-
-    mkdir -p $POLICY_TLS_DEST
-    cp -rf $POLICY_TLS_REPOSITORY $POLICY_TLS_DEST
-
-    mkdir -p $WORKER_TLS_DEST
-    cp -rf $WORKER_TLS_REPOSITORY $WORKER_TLS_DEST
 }
 
 clean_remote_certs() {
     rm -rf $AUTH_TLS_DEST
-
-    rm -rf $GUARDIAN_TLS_DEST
-
-    rm -rf $POLICY_TLS_DEST
-
-    rm -rf $WORKER_TLS_DEST
 }
 
 clean_local_certs() {
