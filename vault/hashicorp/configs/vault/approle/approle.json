@@ -1,34 +1,10 @@
 [
   {
     "role_name": "auth_service",
-    "policies": ["secretkey_auth"],
+    "policies": ["root_secret_policy"],
     "env_path": [
       "auth-service/.env",
       "auth-service/.env.docker"
-    ]
-  },
-  {
-    "role_name": "guardian_service",
-    "policies": ["wallet","operator"],
-    "env_path": [
-      "guardian-service/.env",
-      "guardian-service/.env.docker"
-    ]
-  },
-  {
-    "role_name": "policy_service",
-    "policies": ["wallet","operator"],
-    "env_path": [
-      "policy-service/.env",
-      "policy-service/.env.docker"
-    ]
-  },
-  {
-    "role_name": "worker_service",
-    "policies": ["apikey_ipfs"],
-    "env_path": [
-      "worker-service/.env",
-      "worker-service/.env.docker"
     ]
   }
 ]
