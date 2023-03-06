@@ -24,18 +24,26 @@ read() {
   X_VAULT_TOKEN=$2
 
   if [ -z "$X_VAULT_TOKEN" ]; then
-    curl -s \
-      --cacert $VAULT_CACERT \
-      --cert $VAULT_CLIENT_CERT \
-      --key $VAULT_CLIENT_KEY \
-      $URL
+    if [ $TLS_ENABLE = "true" ]; then
+      curl -k  \
+        --cacert $VAULT_CACERT \
+        --cert $VAULT_CLIENT_CERT \
+        --key $VAULT_CLIENT_KEY \
+        $URL
+    else
+      curl   $URL
+    fi
   else
-    curl -s \
+    if [ $TLS_ENABLE = "true" ]; then
+      curl   \
       --cacert $VAULT_CACERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       --header "X-Vault-Token: $VAULT_TOKEN" \
       $URL
+    else
+      curl   $URL --header "X-Vault-Token: $VAULT_TOKEN"
+    fi
   fi
 }
 
@@ -49,20 +57,33 @@ write() {
   X_VAULT_TOKEN=$3
 
   if [ -z "$X_VAULT_TOKEN" ]; then
-    curl -k -s --request POST \
-      --cacert $VAULT_CACERT \
-      --cert $VAULT_CLIENT_CERT \
-      --key $VAULT_CLIENT_KEY \
-      --data "$DATA" \
-      $URL
+    if [ $TLS_ENABLE = "true" ]; then
+      curl -k -s --request POST \
+        --cacert $VAULT_CACERT \
+        --cert $VAULT_CLIENT_CERT \
+        --key $VAULT_CLIENT_KEY \
+        --data "$DATA" \
+        $URL
+    else
+      curl -k -s --request POST \
+        --data "$DATA" \
+        $URL
+    fi
   else
-    curl -k -s --request POST \
-      --cacert $VAULT_CACERT \
-      --cert $VAULT_CLIENT_CERT \
-      --key $VAULT_CLIENT_KEY \
-      --header "X-Vault-Token: $X_VAULT_TOKEN" \
-      --data "$DATA" \
-      $URL
+    if [ $TLS_ENABLE = "true" ]; then
+      curl -k -s --request POST \
+        --cacert $VAULT_CACERT \
+        --cert $VAULT_CLIENT_CERT \
+        --key $VAULT_CLIENT_KEY \
+        --header "X-Vault-Token: $X_VAULT_TOKEN" \
+        --data "$DATA" \
+        $URL
+    else
+      curl -k  --request POST \
+        --data "$DATA" \
+        --header "X-Vault-Token: $X_VAULT_TOKEN" \
+        $URL
+    fi
   fi
 }
 
@@ -170,16 +191,6 @@ get_approle_credentials() {
   done
 }
 
-# Push secrets for all services to Vault
-push_secrets() {
-  SECRETS=$(cat "$SECRETS_DIR" | jq -c -r '.[]')
-  for SECRET in ${SECRETS[@]}; do
-    SECRET_PATH=$(echo $SECRET | jq -r .path )
-    SECRET_DATA=$(echo $SECRET | jq -r .data )
-    write "{\"data\": $SECRET_DATA}" v1/secret/data/$SECRET_PATH $VAULT_TOKEN
-  done
-}
-
 echo "Initialize Vault"
 init_vault
 
@@ -200,6 +211,3 @@ create_roles
 
 echo "Get AppRole Credentials for all services"
 get_approle_credentials
-
-echo "Push secrets for all services to Vault"
-push_secrets
