@@ -25,7 +25,7 @@ read() {
 
   if [ -z "$X_VAULT_TOKEN" ]; then
     if [ $TLS_ENABLE = "true" ]; then
-      curl -k  \
+      curl -k -s \
         --cacert $VAULT_CACERT \
         --cert $VAULT_CLIENT_CERT \
         --key $VAULT_CLIENT_KEY \
@@ -35,14 +35,14 @@ read() {
     fi
   else
     if [ $TLS_ENABLE = "true" ]; then
-      curl   \
+      curl -k -s  \
       --cacert $VAULT_CACERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       --header "X-Vault-Token: $VAULT_TOKEN" \
       $URL
     else
-      curl   $URL --header "X-Vault-Token: $VAULT_TOKEN"
+      curl -s $URL --header "X-Vault-Token: $VAULT_TOKEN"
     fi
   fi
 }
@@ -65,7 +65,7 @@ write() {
         --data "$DATA" \
         $URL
     else
-      curl -k -s --request POST \
+      curl -s --request POST \
         --data "$DATA" \
         $URL
     fi
@@ -79,7 +79,7 @@ write() {
         --data "$DATA" \
         $URL
     else
-      curl -k  --request POST \
+      curl -s --request POST \
         --data "$DATA" \
         --header "X-Vault-Token: $X_VAULT_TOKEN" \
         $URL
