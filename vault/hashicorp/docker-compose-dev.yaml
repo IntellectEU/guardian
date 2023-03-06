@@ -1,0 +1,50 @@
+version: "3.7"
+
+x-container-common: &container-common
+  restart: "on-failure"
+  networks:
+    - vault
+
+services:
+  consul:
+    image: consul:1.12.4
+    container_name: consul
+    restart: "on-failure"
+    volumes:
+      - ./consul/config/consul.json:/consul/config/consul.json:ro
+    ports:
+      - 8500:8500
+    entrypoint: 
+      - sh
+      - -ca
+      - |
+        consul agent -config-file=/consul/config/consul.json
+
+  vault:
+    image: vault:1.12.2
+    container_name: vault
+    restart: "on-failure"
+    tty: true
+    volumes:
+      - ./vault/config/vault.json:/vault/config/vault.json
+      - ./vault/repository/policies:/vault/policies
+      - ./vault/repository/data:/vault/data
+      - ./vault/repository/logs:/vault/logs
+    environment:
+      ROOT_TOKEN_PATH: /vault/.root
+      VAULT_ADDR: http://vault:8200
+    entrypoint:
+      - sh
+      - -c
+      - |
+        vault server -config=/vault/config/vault.json
+    ports:
+      - 8200:8200
+    healthcheck:
+      test: [ "CMD", "curl", "-i", "http://127.0.0.1:8200/v1/sys/health?drsecondarycode=200" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    depends_on:
+      - consul
