@@ -1,6 +1,8 @@
-import { connect, Subscription } from 'ts-nats';
+import { Client, connect, Subscription } from 'ts-nats';
+import axios from 'axios'
+import { getWebhooks } from './webhooks';
 
-const externalMessageEvents = [
+export const externalMessageEvents = [
   'external-events.token_minted',
   'external-events.error_logs',
   'external-events.block_event',
@@ -8,17 +10,33 @@ const externalMessageEvents = [
   'external-events.ipfs_before_upload_content',
   'external-events.ipfs_after_read_content',
   'external-events.ipfs_loaded_file',
-  'foo',
+  'application-metrics',
 ];
 
-export const initializeNats = async () => {
-  const nc = await connect({ servers: ['0.0.0.0:4222'] });
-// Close the connection when finished
-  nc.on('close', () => {
-    console.log('Connection to NATS closed');
-  });
+let natsServer: Promise<Client>;
 
-  return nc;
+export const initializeNats = async () => {
+  if (natsServer) return natsServer;
+  natsServer = connect({ servers: ['0.0.0.0:4222'] });
+
+  return natsServer;
+}
+
+const sendEvents = async (event: JSON) => {
+  const webhooks = await getWebhooks();
+  if (!webhooks || !webhooks?.length) return;
+
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  for (const webhook of webhooks) {
+    try {
+      const { data } = await axios.post(webhook.url, event, { headers })
+      console.log('Webhook response:', JSON.stringify(data));
+    } catch (e: any) {
+      console.error(e.message);
+    }
+  }
 }
 
 export const natsSubscriberService = async () => {
@@ -26,12 +44,13 @@ export const natsSubscriberService = async () => {
   const subscriptions: Subscription[] = [];
 
   for (const subject of externalMessageEvents) {
+    console.log('Subject:', subject);
     const sub = await nc.subscribe(subject, (err, msg: any) => {
       if (err) {
         return console.log(err);
       }
-      console.log(`Received message on ${subject}:`, JSON.parse(msg.data));
-      // Send message data to webhooks
+      console.log(`Received message on "${subject}" subject:`, JSON.parse(msg.data));
+      sendEvents(JSON.parse(msg.data));
     });
     subscriptions.push(sub);
   }
