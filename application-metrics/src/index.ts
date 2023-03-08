@@ -8,7 +8,7 @@ import { findWebhook, getWebhooks, removeWebhook, saveWebhook } from './services
 import morgan from 'morgan';
 const app = express();
 
-app.use(morgan('combined'))
+app.use(morgan('tiny'))
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
