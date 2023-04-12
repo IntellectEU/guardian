@@ -87,7 +87,7 @@
                         <button *ngIf="currentIndex === 0 && !buttonOnceRaised" mat-raised-button color="primary" id="cancel-btn" (click)="onCancelBtnClick()">Cancel</button>
                         <button *ngIf="currentIndex !== 0" mat-raised-button color="primary" id="previous-btn" [style.z-index]="i === 1 ? 200 : 100" (click)="getPrevShownFields(fields)">Previous</button>
                         <button *ngIf="i !== fields.length - 1 && isShown[fields.length - 1] === false" mat-raised-button color="primary" id="next-btn" [style.z-index]="i !== 0 ? 306 : 100" (click)="getNextShownFields(fields)">Next</button>
-                        <button *ngIf="isShown[fields.length - 1]" mat-raised-button [disabled]="!this.options.valid" color="primary" id="submit-btn" [style.z-index]="i !== 0 ? 306 : 100" (click)="onSubmitBtnClick(fields)">Submit</button>
+                        <button *ngIf="isShown[fields.length - 1] && !disableSubmitBtn" mat-raised-button [disabled]="!this.options.valid" color="primary" id="submit-btn" [style.z-index]="i !== 0 ? 306 : 100" (click)="onSubmitBtnClick(fields)">Submit</button>
                     </div>
 
                 </div>
@@ -114,7 +114,7 @@
                                 [disabled]="item.control?.disabled">
                             </app-geojson-type>
                             <app-schema-form *ngSwitchDefault [formGroup]="item.control" [fields]="item.fields"
-                                [context]="item.context" [private-fields]="hide" [delimiter-hide]="true"
+                                [context]="item.context" [private-fields]="hide" [delimiter-hide]="true" [disableSubmitBtn]="true"
                                 [conditions]="item.conditions" [preset]="item.preset" [showChildSchemaForm]="!showChildSchemaForm" [buttonOnceRaised]="true">
                             </app-schema-form>
                         </ng-container>
@@ -135,7 +135,7 @@
                     <button *ngIf="currentIndex === 0 && !buttonOnceRaised && innerWidth <= 810" mat-raised-button color="primary" id="cancel-btn" (click)="onCancelBtnClick()">Cancel</button>
                     <button *ngIf="currentIndex !== 0 && !buttonOnceRaised && innerWidth <= 810" mat-raised-button color="primary" id="previous-btn" (click)="getPrevShownFields(fields)">Previous</button>
                     <button *ngIf="i !== fields.length - 1 && !buttonOnceRaised && innerWidth <= 810" mat-raised-button color="primary" id="next-btn" (click)="getNextShownFields(fields)">Next</button>
-                    <button *ngIf="isShown[fields.length - 1]" mat-raised-button [disabled]="!this.options.valid" color="primary" id="submit-btn" (click)="onSubmitBtnClick(fields)">Submit</button>
+                    <button *ngIf="isShown[fields.length - 1] && !disableSubmitBtn" mat-raised-button [disabled]="!this.options.valid" color="primary" id="submit-btn" (click)="onSubmitBtnClick(fields)">Submit</button>
                 </div>
             </div>
 

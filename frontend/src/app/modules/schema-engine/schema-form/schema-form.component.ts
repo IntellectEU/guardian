@@ -95,6 +95,7 @@ export class SchemaFormComponent implements OnInit {
     conditionFields: SchemaField[] = [];
 
     @Input() cancelHidden: boolean = true;
+    @Input('disableSubmitBtn') disableSubmitBtn: boolean = false;
     @Output() cancelBtnEvent = new EventEmitter<boolean>();
     @Output() submitBtnEvent = new EventEmitter<boolean>();
 
