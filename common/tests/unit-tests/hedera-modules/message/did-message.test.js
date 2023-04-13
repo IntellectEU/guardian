@@ -12,7 +12,7 @@ const { MessageStatus } = require('../../../../dist/hedera-modules/message/messa
 const { MessageType } = require('../../../../dist/hedera-modules/message/message-type');
 const { MessageAction } = require('../../../../dist/hedera-modules/message/message-action');
 
-describe.skip('DIDMessage', function () {
+describe('DIDMessage', function () {
     const testDidMessage = {
         id: "testId",
         status: MessageStatus.ISSUE,

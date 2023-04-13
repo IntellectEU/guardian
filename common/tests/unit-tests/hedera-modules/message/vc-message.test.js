@@ -12,7 +12,7 @@ const { MessageAction } = require('../../../../dist/hedera-modules/message/messa
 const { UrlType } = require('../../../../dist/hedera-modules/message/url.interface');
 const { vc_document } = require('../../dump/vc_document');
 
-describe.skip('VCMessage', function () {
+describe('VCMessage', function () {
 
     const testVCMessage = {
         id: "testId",

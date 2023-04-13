@@ -9,7 +9,7 @@ const { MessageAction } = require('../../../../dist/hedera-modules/message/messa
 const { MessageStatus } = require('../../../../dist/hedera-modules/message/message');
 const { UrlType } = require('../../../../dist/hedera-modules/message/url.interface');
 
-describe.skip('Message', function () {
+describe('Message', function () {
 
     const testUrls = [{
         cid: "testCidFirst",

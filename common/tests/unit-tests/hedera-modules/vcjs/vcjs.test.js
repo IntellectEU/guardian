@@ -26,7 +26,7 @@ const { PrivateKey } = require("@hashgraph/sdk");
 const { vc_document } = require('../../dump/vc_document');
 
 
-describe.skip('VCJS', function () {
+describe('VCJS', function () {
     const actualVcDocument = vc_document.find(document => document.hash === '9s7b1eW2gkZEd64SAidCci3UmXQgfZt2w6ajiKdPdHa9');
     const vcValueToCreate = actualVcDocument.document.credentialSubject[0];
     const newPrivateKey = PrivateKey.generate();

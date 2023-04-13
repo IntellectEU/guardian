@@ -9,7 +9,7 @@ const {
 const { PrivateKey } = require("@hashgraph/sdk");
 const { did_document } = require('../../dump/did_document');
 
-describe.skip('DidDocuments', function () {
+describe('DidDocuments', function () {
     const topicId = "0.0.34195177";
     const did = `did:hedera:testnet:4TxrFRUL3zxz5tMb9ioZEzhDq6h3QBijWAFbPWC7mXFv;hedera:testnet:tid=${topicId}`;
     const newPrivateKey = PrivateKey.generate();
