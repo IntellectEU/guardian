@@ -407,7 +407,16 @@ export class UserProfileComponent implements OnInit {
     }
 
     createRetireRequest() {
+        this.loading = true;
+        this.tokenService
+            .getTokens()
+            .subscribe(this.openRetireDialog.bind(this), (error) => {
+                console.error(error);
+                this.loading = false;
+            });
+    }
 
+    openRetireDialog(tokens: any) {
         let dialogRef;
         if (this.innerWidth <= 810) {
             const bodyStyles = window.getComputedStyle(document.body);
@@ -424,7 +433,7 @@ export class UserProfileComponent implements OnInit {
                 closeOnNavigation: true,
                 autoFocus: false,
                 data: {
-                    tokens: this.tokens,
+                    tokens,
                 },
             });
         } else {
@@ -434,12 +443,11 @@ export class UserProfileComponent implements OnInit {
                 disableClose: true,
                 autoFocus: false,
                 data: {
-                    tokens: this.tokens,
+                    tokens,
                 },
             });
         }
-        
-        this.loading = false;
+        dialogRef.afterOpened().subscribe(() => (this.loading = false));
         dialogRef.afterClosed().subscribe(async (result) => {
             if (result) {
                 this.loading = true;
