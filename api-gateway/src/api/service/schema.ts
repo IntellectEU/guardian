@@ -373,7 +373,7 @@ schemaAPI.post('/import/message/preview', [
   validate(schemaSchema()), permissionHelper(UserRole.STANDARD_REGISTRY)
 ], async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        const messageId = req.body.messageId;
+        const messageId = req.body.messageId as string;
         const guardians = new Guardians();
         const schemaToPreview = await guardians.previewSchemasByMessages([messageId]);
         return res.json(schemaToPreview);
@@ -389,7 +389,7 @@ schemaAPI.post('/push/import/message/preview', [
     const taskManager = new TaskManager();
     const { taskId, expectation } = taskManager.start('Preview schema message');
 
-    const messageId = req.body.messageId;
+    const messageId = req.body.messageId as string;
     RunFunctionAsync<ServiceError>(async () => {
         if (!messageId) {
             throw new Error('Schema ID in body is empty');
@@ -428,9 +428,9 @@ schemaAPI.post('/:topicId/import/message',
   , async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const user = req.user;
-        const topicId = req.params.topicId;
+        const topicId = req.params.topicId as string;
         const guardians = new Guardians();
-        const messageId = req.body.messageId;
+        const messageId = req.body.messageId as string;
         await guardians.importSchemasByMessages([messageId], req.user.did, topicId);
         const { items, count } = await guardians.getSchemasByOwner(user.did);
         SchemaHelper.updatePermission(items, user.did);
@@ -449,8 +449,8 @@ schemaAPI.post('/push/:topicId/import/message', [
     const { taskId, expectation } = taskManager.start('Import schema message');
 
     const user = req.user;
-    const topicId = req.params.topicId;
-    const messageId = req.body.messageId;
+    const topicId = req.params.topicId as string;
+    const messageId = req.body.messageId as string;
     RunFunctionAsync<ServiceError>(async () => {
         const guardians = new Guardians();
         await guardians.importSchemasByMessagesAsync([messageId], user.did, topicId, taskId);
@@ -467,7 +467,7 @@ schemaAPI.post('/:topicId/import/file', permissionHelper(UserRole.STANDARD_REGIS
         const user = req.user;
         const guardians = new Guardians();
         const zip = req.body;
-        const topicId = req.params.topicId;
+        const topicId = req.params.topicId as string;
         if (!zip) {
             return next(createError(422, 'File in body is empty'));
         }
