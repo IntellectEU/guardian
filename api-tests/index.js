@@ -10,6 +10,7 @@ const { sleep, GenerateTokens } = require("./helpers");
 const { Accounts } = require("./test-suits/accounts");
 const { Profiles } = require("./test-suits/profiles");
 const { Trustchains } = require("./test-suits/trustchains");
+const { TrustChains } = require("./test-suits/trust-chains");
 
 
 const processes = [];
@@ -45,6 +46,7 @@ describe('Tests', async function () {
     Profiles();
     // Schemas();
     Trustchains();
+    TrustChains();
     // Policies();
 
     after(async function () {
