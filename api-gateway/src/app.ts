@@ -1,6 +1,9 @@
+import hpp from 'hpp';
+
 import {
     accountAPI,
     trustchainsAPI,
+    trustChainsAPI,
     demoAPI,
     profileAPI,
     schemaAPI,
@@ -52,6 +55,7 @@ Promise.all([
             type: 'binary/octet-stream'
         }));
         app.use(fileupload());
+        app.use(hpp());
         new Logger().setConnection(cn);
         await new Guardians().setConnection(cn).init();
         await new IPFS().setConnection(cn).init();
@@ -75,10 +79,10 @@ Promise.all([
         app.use('/schema', authorizationHelper, singleSchemaRoute);
         app.use('/schemas', authorizationHelper, schemaAPI);
         app.use('/tokens', authorizationHelper, tokenAPI);
-        app.use('/artifact', authorizationHelper, artifactAPI);
-        app.use('/trustchains', authorizationHelper, trustchainsAPI);
-        app.use('/external', externalAPI);
-        app.use('/demo', demoAPI);
+        app.use('/artifacts', authorizationHelper, artifactAPI);
+        app.use('/trust-chains/', authorizationHelper, trustChainsAPI);
+        app.use('/external/', externalAPI);
+        app.use('/demo/', demoAPI);
         app.use('/ipfs', authorizationHelper, ipfsAPI);
         app.use('/logs', authorizationHelper, loggerAPI);
         app.use('/tasks', taskAPI);
@@ -86,9 +90,20 @@ Promise.all([
         app.use('/contracts', authorizationHelper, contractAPI);
         app.use('/branding', authorizationHelper, brandingAPI);
         app.use('/modules', authorizationHelper, moduleAPI);
-        app.use('/map', mapAPI);
         app.use('/tags', authorizationHelper, tagsAPI);
+        app.use('/map', authorizationHelper, mapAPI);
+
+        /**
+         * @deprecated 2023-03-01
+         */
+        app.use('/trustchains/', authorizationHelper, trustchainsAPI);
+        app.use('/artifact', authorizationHelper, artifactAPI);
         /////////////////////////////////////////
+
+        // middleware error handler
+        app.use((err, req, res, next) => {
+            return res.status(err?.status || 500).json({ code: err?.status || 500, message: err.message })
+        });
 
         server.setTimeout()
         server.setTimeout(12000000).listen(PORT, () => {

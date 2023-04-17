@@ -91,9 +91,10 @@ export class HeaderComponent implements OnInit {
             this.balanceType = '';
         });
 
-        this.getBallance();
-        this.authSubscription = this.auth.subscribe(() => {
-            this.getBallance();
+        this.authSubscription = this.auth.subscribe((token) => {
+            if (token) {
+                this.getBallance();
+            }
         })
     }
 
@@ -172,6 +173,7 @@ export class HeaderComponent implements OnInit {
     }
 
     rout(link: any) {
+        console.log(link, this);
         this.router.navigate([link.link]);
     }
 
