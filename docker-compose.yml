@@ -115,6 +115,8 @@ services:
     build:
       context: .
       dockerfile: ./auth-service/Dockerfile
+    ports:
+      - '5005:5005'
     depends_on:
       - mongo
       - vault
@@ -126,6 +128,7 @@ services:
       - DEMO=${DEMO}
     expose:
       - 6555
+      - 5005
 
   api-gateway:
     env_file:
@@ -153,6 +156,8 @@ services:
     build:
       context: .
       dockerfile: ./policy-service/Dockerfile
+    ports:
+      - "5006:5006"
     depends_on:
       - mongo
       - message-broker
@@ -162,6 +167,7 @@ services:
       - GUARDIAN_ENV=${GUARDIAN_ENV}
     expose:
       - 50000-60000
+      - 5006
 
 
   guardian-service:
@@ -170,6 +176,8 @@ services:
     build:
       context: .
       dockerfile: ./guardian-service/Dockerfile
+    ports:
+      - "5007:5007"
     depends_on:
       - mongo
       - message-broker
@@ -182,6 +190,7 @@ services:
       - GUARDIAN_ENV=${GUARDIAN_ENV}
     expose:
       - 6555
+      - 5007
 
   application-events:
     build:
@@ -204,7 +213,10 @@ services:
       context: .
       dockerfile: ./mrv-sender/Dockerfile
     expose:
-      - 3005
+      - 3003
+      - 5008
+    ports:
+      - "5008:5008"
 
   topic-viewer:
     build:
@@ -212,6 +224,9 @@ services:
       dockerfile: ./topic-viewer/Dockerfile
     expose:
       - 3006
+      - 5009
+    ports:
+      - "5009:5009"
 
   web-proxy:
     build:
@@ -226,10 +241,15 @@ services:
       - api-docs
       - mrv-sender
       - mongo-express
-
 volumes:
   mongo:
+  prometheus_data: {}
+  grafana_data: {}
   # volume-guardian-service:
   # volume-ui-service:
   # volume-mrv-sender:
   #  volume-message-broker:
+
+networks:
+  monitoring:
+    driver: bridge
