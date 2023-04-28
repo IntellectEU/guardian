@@ -2,11 +2,7 @@
   "author": "Envision Blockchain Solutions <info@envisionblockchain.com>",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.319.0",
-<<<<<<< HEAD
     "@guardian/interfaces": "^2.12.0",
-=======
-    "@guardian/interfaces": "^2.12.0-prerelease",
->>>>>>> 23f408ad (Final fixes and doc updates for the 2.12.0 release (#2072))
     "@hashgraph/sdk": "^2.22.0",
     "@mattrglobal/jsonld-signatures-bbs": "^1.1.2",
     "@meeco/cryppo": "^2.0.2",
