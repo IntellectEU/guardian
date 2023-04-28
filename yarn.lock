@@ -1056,7 +1056,11 @@ __metadata:
   resolution: "@guardian/common@workspace:common"
   dependencies:
     "@aws-sdk/client-secrets-manager": ^3.319.0
+<<<<<<< HEAD
     "@guardian/interfaces": ^2.12.0
+=======
+    "@guardian/interfaces": ^2.12.0-prerelease
+>>>>>>> 23f408ad (Final fixes and doc updates for the 2.12.0 release (#2072))
     "@hashgraph/sdk": ^2.22.0
     "@mattrglobal/jsonld-signatures-bbs": ^1.1.2
     "@meeco/cryppo": ^2.0.2
@@ -3005,8 +3009,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "auth-service@workspace:auth-service"
   dependencies:
+<<<<<<< HEAD
     "@guardian/common": ^2.12.0
     "@guardian/interfaces": ^2.12.0
+=======
+    "@guardian/common": ^2.12.0-prerelease
+    "@guardian/interfaces": ^2.12.0-prerelease
+>>>>>>> 23f408ad (Final fixes and doc updates for the 2.12.0 release (#2072))
     "@mikro-orm/core": ~5.7.2
     "@mikro-orm/mongodb": ~5.7.2
     "@types/jsonwebtoken": ^8.5.4
@@ -7661,8 +7670,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "logger-service@workspace:logger-service"
   dependencies:
+<<<<<<< HEAD
     "@guardian/common": ^2.12.0
     "@guardian/interfaces": ^2.12.0
+=======
+    "@guardian/common": ^2.12.0-prerelease
+    "@guardian/interfaces": ^2.12.0-prerelease
+>>>>>>> 23f408ad (Final fixes and doc updates for the 2.12.0 release (#2072))
     "@mikro-orm/core": ~5.7.2
     "@mikro-orm/mongodb": ~5.7.2
     "@types/fs-extra": ^9.0.12
