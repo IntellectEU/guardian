@@ -449,6 +449,11 @@ a[hidden="true"] {
         border-left: 4px var(--primary-color) solid;
     }
 
+    .only-active {
+        display: block !important;
+        color: #aaaaaa !important;
+    }
+
 
     /* Menu Footer */
 
