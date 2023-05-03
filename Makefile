@@ -40,7 +40,7 @@ guardian_build:
 	cd policy-service && yarn install && yarn build:prod
 	cd topic-viewer && yarn install && yarn build:prod
 	cd mrv-sender && yarn install && yarn build:prod
-	cd frontend && yarn install && yarn build:prod
+	cd frontend && yarn install  && export NODE_OPTIONS=--openssl-legacy-provider && yarn build:prod
 
 guardian_make_env:
 	cd logger-service && cp .env.example .env && cp .env.docker.example .env.docker
@@ -51,11 +51,11 @@ guardian_make_env:
 	cd policy-service && cp .env.example .env && cp .env.docker.example .env.docker
 
 guardian_up_pm2:
-	docker-compose -f docker-compose-dev.yml up -d mongo message-broker ipfs-node
+	docker compose -f docker-compose-dev.yml up -d mongo message-broker ipfs-node
 	pm2 start ecosystem.config.js
 
 guardian_down_pm2:
-	docker-compose stop mongo
-	docker-compose rm -s -v mongo
+	docker compose stop mongo
+	docker compose rm -s -v mongo
 	pm2 delete all
 	

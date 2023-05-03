@@ -18,13 +18,11 @@ Promise.all([
     const channelName = (process.env.SERVICE_CHANNEL || `worker.${Date.now()}`).toUpperCase()
     const [cn] = values;
     const channel = new MessageBrokerChannel(cn, 'worker');
-
     const logger = new Logger();
     logger.setConnection(cn);
     const state = new ApplicationState();
     await state.setServiceName('WORKER').setConnection(cn).init();
     await state.updateState(ApplicationStates.STARTED);
-
     await new OldSecretManager().setConnection(cn).init();
 
     const validator = new ValidateConfiguration();
@@ -40,7 +38,6 @@ Promise.all([
             IPFS_STORAGE_API_KEY= process.env.IPFS_STORAGE_API_KEY
             await secretManager.setSecrets('apikey/ipfs', { IPFS_STORAGE_API_KEY });
         }
-
         HederaSDKHelper.setTransactionLogSender(async (data) => {
             await channel.publish(`guardians.transaction-log-event`, data);
         });
