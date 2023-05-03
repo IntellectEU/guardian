@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  displayDemoAccounts: true,
+  displayDemoAccounts: false,
   explorerSettings: {
     url: 'https://explore.lworks.io/${network}/${type}/${value}',
     networkMap: {

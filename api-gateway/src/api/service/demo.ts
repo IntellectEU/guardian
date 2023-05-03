@@ -5,6 +5,8 @@ import { Logger, RunFunctionAsync } from '@guardian/common';
 import { TaskManager } from '@helpers/task-manager';
 import { ServiceError } from '@helpers/service-requests-base';
 
+const isDemoEnabled = process.env.DEMO === 'true';
+
 /**
  * Route for demo api
  */
@@ -91,26 +93,29 @@ demoAPI.get('/push/randomKey', async (req: Request, res: Response) => {
     res.status(201).send({ taskId, expectation });
 });
 
-demoAPI.get('/registered-users', async (req: Request, res: Response, next: NextFunction) => {
-    const users = new Users();
-    const guardians = new Guardians();
-    try {
-        const demoUsers: any = await users.getAllUserAccountsDemo();
 
-        for (const element of demoUsers) {
-            if (element.did) {
-                element.policyRoles = await guardians.getUserRoles(element.did);
-            } else {
-                element.policyRoles = [];
+if (isDemoEnabled) {
+    demoAPI.get('/registered-users', async (req: Request, res: Response, next: NextFunction) => {
+        const users = new Users();
+        const guardians = new Guardians();
+        try {
+            const demoUsers: any = await users.getAllUserAccountsDemo();
+
+            for (const element of demoUsers) {
+                if (element.did) {
+                    element.policyRoles = await guardians.getUserRoles(element.did);
+                } else {
+                    element.policyRoles = [];
+                }
             }
-        }
 
-        res.json(demoUsers);
-    } catch (error) {
-        new Logger().error(error, ['API_GATEWAY']);
-        return next(error);
-    }
-});
+            res.json(demoUsers);
+        } catch (error) {
+            new Logger().error(error, ['API_GATEWAY']);
+            return next(error);
+        }
+    });
+}
 
 demoAPI.get('/random-key', async (req: Request, res: Response, next: NextFunction) => {
     try {

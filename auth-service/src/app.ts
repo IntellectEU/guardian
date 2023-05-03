@@ -42,7 +42,9 @@ Promise.all([
     await state.setServiceName('AUTH_SERVICE').setConnection(cn).init();
     state.updateState(ApplicationStates.INITIALIZING);
     try {
-        await fixtures();
+        if (process.env.DEMO && process.env.DEMO === 'true') {
+            await fixtures();
+        }
 
         new Logger().setConnection(cn);
         await new AccountService().setConnection(cn).init();

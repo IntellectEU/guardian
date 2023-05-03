@@ -68,6 +68,9 @@ export class HeaderComponent implements OnInit {
         if (this.innerWidth <= 810) {
             document.documentElement.style.setProperty('--header-height', '75px');
         }
+        if (this.displayDemoAccounts) {
+            document.documentElement.style.setProperty('--header-background-color', '#555555');
+        }
         this.activeLink = "";
         this.update();
         this.ws = this.webSocketService.profileSubscribe((event) => {

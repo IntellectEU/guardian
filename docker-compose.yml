@@ -118,6 +118,7 @@ services:
     environment:
       - ENV=${GUARDIAN_ENV}
       - DIRECT_MESSAGE_PORT=6555
+      - DEMO=${DEMO}
     expose:
       - 6555
 
@@ -138,6 +139,7 @@ services:
       - logger-service
     environment:
       - ENV=${GUARDIAN_ENV}
+      - DEMO=${DEMO}
       - DIRECT_MESSAGE_PORT=6555
 
   policy-service:
@@ -209,7 +211,7 @@ services:
   web-proxy:
     build:
       context: .
-      dockerfile: ./web-proxy/Dockerfile
+      dockerfile: ./web-proxy/Dockerfile${DEMO:+.demo}
     ports:
       - "3000:80"
     depends_on:
@@ -219,6 +221,7 @@ services:
       - api-docs
       - mrv-sender
       - mongo-express
+
 volumes:
   mongo:
   # volume-guardian-service:
