@@ -1,36 +1,9 @@
-require('dotenv').config({ path: '../../.env' });
-
 const axios = require('axios');
 const assert = require('assert')
 const {GetURL, sleep, SaveToken, GetToken} = require('../helpers');
 
-async function createAccount(username, password, role) {
-    const result = await axios.post(
-        GetURL('accounts', 'register'),
-        {
-            username,
-            password,
-            password_confirmation: password,
-            role
-        },
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-    );
-}
 
 function Accounts() {
-    before(async function() {
-        if (process.env.DEMO !== 'true') {
-            // Create the required user accounts for testing
-            await createAccount('StandardRegistry', 'test', 'STANDARD_REGISTRY');
-            await createAccount('Installer', 'test', 'USER');
-            await createAccount('Installer2', 'test', 'USER');
-        }
-    });
-
     it('/accounts/login', async function() {
         let result;
         result = await axios.post(
@@ -105,6 +78,7 @@ function Accounts() {
         assert.deepEqual(
             result.data.map(v => {
                 delete v.did;
+                delete v.parent;
                 return v;
             }),
             [
@@ -150,6 +124,7 @@ function Accounts() {
         delete result.data.walletToken;
         delete result.data.createDate;
         delete result.data.updateDate;
+        delete result.data.parent;
         assert.deepEqual(result.data, {
             role: 'STANDARD_REGISTRY',
             username: 'StandardRegistry',
@@ -173,6 +148,7 @@ function Accounts() {
         delete result.data.walletToken;
         delete result.data.createDate;
         delete result.data.updateDate;
+        delete result.data.parent;
         assert.deepEqual(result.data, { username: 'Installer', role: 'USER' });
     });
 

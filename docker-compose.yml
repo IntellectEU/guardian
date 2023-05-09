@@ -229,6 +229,8 @@ services:
       - "5009:5009"
 
   web-proxy:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
     build:
       context: .
       dockerfile: ./web-proxy/Dockerfile${DEMO:+.demo}
