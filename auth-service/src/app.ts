@@ -43,6 +43,7 @@ Promise.all([
     await state.setServiceName('AUTH_SERVICE').setConnection(cn).init();
     state.updateState(ApplicationStates.INITIALIZING);
     try {
+        // Demo accounts will only be produced when DEMO=true on the root .env file 
         if (process.env.DEMO && process.env.DEMO === 'true') {
             await fixtures();
         }

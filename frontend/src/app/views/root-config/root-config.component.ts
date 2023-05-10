@@ -11,6 +11,7 @@ import { VCViewerDialog } from '../../modules/schema-engine/vc-dialog/vc-dialog.
 import { HeaderPropsService } from '../../services/header-props.service';
 import { InformService } from '../../services/inform.service';
 import { TasksService } from '../../services/tasks.service';
+import { environment } from 'src/environments/environment';
 
 enum OperationMode {
     None,
@@ -29,6 +30,8 @@ enum OperationMode {
     styleUrls: ['./root-config.component.css']
 })
 export class RootConfigComponent implements OnInit {
+    demo: boolean = environment.displayDemoAccounts;
+
     @ViewChild('actionMenu') actionMenu: any;
 
     get currentKeyAction() {

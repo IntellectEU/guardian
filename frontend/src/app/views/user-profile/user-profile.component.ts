@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, Subscription } from 'rxjs';
 import { IUser, Token, SchemaEntity, Schema, TagType, SchemaHelper } from '@guardian/interfaces';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 //services
 import { AuthService } from '../../services/auth.service';
 import { ProfileService } from '../../services/profile.service';
@@ -54,6 +55,7 @@ export class UserProfileComponent implements OnInit {
     selectedIndex: number = 0;
     tagEntity = TagType.Token;
     owner: any;
+    demo: boolean = environment.displayDemoAccounts;
 
     public innerWidth: any;
     public innerHeight: any;

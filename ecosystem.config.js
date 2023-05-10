@@ -24,6 +24,7 @@ console.log(readEnvFile('./worker-service/.env'));
 const appEnv = readEnvFile('.env');
 let demo = '';
 
+// If DEMO=true in the root .env file, ensures that the frontend will build the demo instead of production
 if (appEnv.DEMO && appEnv.DEMO === 'true') {
   demo = ':demo';
 }

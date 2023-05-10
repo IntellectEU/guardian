@@ -43,12 +43,43 @@ guardian_build:
 	cd frontend && yarn install && yarn build:prod
 
 guardian_make_env:
-	cd logger-service && cp .env.example .env && cp .env.docker.example .env.docker
-	cd api-gateway && cp .env.example .env && cp .env.docker.example .env.docker
-	cd auth-service && cp .env.example .env && cp .env.docker.example .env.docker
-	cd guardian-service && cp .env.example .env && cp .env.docker.example .env.docker
-	cd worker-service && cp .env.example .env && cp .env.docker.example .env.docker
-	cd policy-service && cp .env.example .env && cp .env.docker.example .env.docker
+	@for dir in logger-service api-gateway auth-service guardian-service worker-service policy-service; do \
+		echo "Writing for $$dir"; \
+		rm -f "$$dir/.env"; \
+		. .env; \
+		GUARDIAN_ENV=$${GUARDIAN_ENV}; \
+		echo $$GUARDIAN_ENV; \
+		if [ "$$GUARDIAN_ENV" = "" ]; then \
+			DOT=""; \
+		else \
+			DOT="."; \
+		fi; \
+		echo $$DOT; \
+		case $$dir in \
+			logger-service) cp $$dir/configs/.env.logger$$DOT$$GUARDIAN_ENV $$dir/.env;; \
+			api-gateway) cp $$dir/configs/.env.gateway$$DOT$$GUARDIAN_ENV $$dir/.env;; \
+			auth-service) cp $$dir/configs/.env.auth$$DOT$$GUARDIAN_ENV $$dir/.env;; \
+			guardian-service) cp $$dir/configs/.env.guardian$$DOT$$GUARDIAN_ENV $$dir/.env; \
+				operator_id=$$(grep -E '^[^#]*OPERATOR_ID' configs/.env.$$GUARDIAN_ENV.guardian.system | grep -o '="[^"]*"' | cut -d '"' -f 2 | tail -n 1); \
+				operator_key=$$(grep -E '^[^#]*OPERATOR_KEY' configs/.env.$$GUARDIAN_ENV.guardian.system | grep -o '="[^"]*"' | cut -d '"' -f 2 | tail -n 1); \
+				grep -v '^OPERATOR_ID=' $$dir/.env > $$dir/.env.tmp && mv $$dir/.env.tmp $$dir/.env; \
+				grep -v '^OPERATOR_KEY=' $$dir/.env > $$dir/.env.tmp && mv $$dir/.env.tmp $$dir/.env; \
+				echo "OPERATOR_ID=\"$$operator_id\"" >> $$dir/.env; \
+				echo "OPERATOR_KEY=\"$$operator_key\"" >> $$dir/.env;; \
+			worker-service) cp $$dir/configs/.env.worker$$DOT$$GUARDIAN_ENV $$dir/.env; \
+				ipfs_storage_api_key=$$(grep -o 'IPFS_STORAGE_API_KEY="[^"]*"' configs/.env.$$GUARDIAN_ENV.guardian.system | cut -d '"' -f 2); \
+				grep -v '^IPFS_STORAGE_API_KEY=' $$dir/.env > $$dir/.env.tmp && mv $$dir/.env.tmp $$dir/.env; \
+				echo "IPFS_STORAGE_API_KEY=\"$$ipfs_storage_api_key\"" >> $$dir/.env;; \
+			policy-service) cp $$dir/configs/.env.policy$$DOT$$GUARDIAN_ENV $$dir/.env;; \
+		esac; \
+	done
+
+guardian_reset_env:
+	@for dir in logger-service api-gateway auth-service guardian-service worker-service policy-service; do \
+		echo "Cleaning $$dir"; \
+		rm -f "$$dir/.env"; \
+		echo 'GUARDIAN_ENV=""' > "$$dir/.env"; \
+	done
 
 guardian_up_pm2:
 	docker-compose -f docker-compose-dev.yml up -d mongo message-broker ipfs-node

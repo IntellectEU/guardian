@@ -1,8 +1,36 @@
+require('dotenv').config({ path: '../../.env' });
+
 const axios = require('axios');
 const assert = require('assert')
 const {GetURL, sleep, SaveToken, GetToken} = require('../helpers');
 
+async function createAccount(username, password, role) {
+    const result = await axios.post(
+        GetURL('accounts', 'register'),
+        {
+            username,
+            password,
+            password_confirmation: password,
+            role
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+}
+
 function Accounts() {
+    before(async function() {
+        if (process.env.DEMO !== 'true') {
+            // Create the required user accounts for testing
+            await createAccount('StandardRegistry', 'test', 'STANDARD_REGISTRY');
+            await createAccount('Installer', 'test', 'USER');
+            await createAccount('Installer2', 'test', 'USER');
+        }
+    });
+
     it('/accounts/login', async function() {
         let result;
         result = await axios.post(
