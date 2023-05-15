@@ -55,7 +55,7 @@ export class UserProfileComponent implements OnInit {
     selectedIndex: number = 0;
     tagEntity = TagType.Token;
     owner: any;
-    demo: boolean = environment.displayDemoAccounts;
+    production: boolean = environment.production;
 
     public innerWidth: any;
     public innerHeight: any;

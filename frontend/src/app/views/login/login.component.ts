@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { UserRole } from '@guardian/interfaces';
 import { AuthStateService } from 'src/app/services/auth-state.service';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 /**
  * Login page.
@@ -17,6 +18,7 @@ import { Subscription } from 'rxjs';
 export class LoginComponent implements OnInit, OnDestroy {
     loading: boolean = false;
     errorMessage: string = "";
+    production: boolean = environment.production;
 
     loginForm = this.fb.group({
         login: ['', Validators.required],

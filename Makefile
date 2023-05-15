@@ -28,7 +28,7 @@ clean_keys:
 clean: clean_keys
 	@rm -rf ./vault/hashicorp/vault ./vault/hashicorp/consul
 
-guardian_build:
+guardian_build_prod:
 	cd interfaces && yarn install && yarn build:prod
 	cd common && yarn install && yarn build:prod
 
@@ -42,19 +42,31 @@ guardian_build:
 	cd mrv-sender && yarn install && yarn build:prod
 	cd frontend && yarn install && yarn build:prod
 
+guardian_build_demo:
+	cd interfaces && yarn install && yarn build:prod
+	cd common && yarn install && yarn build:prod
+
+	cd logger-service && yarn install && yarn build:prod
+	cd api-gateway && yarn install && yarn build:demo
+	cd auth-service && yarn install && yarn build:demo
+	cd worker-service && yarn install && yarn build:prod
+	cd guardian-service && yarn install && yarn build:prod
+	cd policy-service && yarn install && yarn build:prod
+	cd topic-viewer && yarn install && yarn build:prod
+	cd mrv-sender && yarn install && yarn build:prod
+	cd frontend && yarn install && yarn build:demo
+
 guardian_make_env:
 	@for dir in logger-service api-gateway auth-service guardian-service worker-service policy-service; do \
 		echo "Writing for $$dir"; \
 		rm -f "$$dir/.env"; \
 		. .env; \
 		GUARDIAN_ENV=$${GUARDIAN_ENV}; \
-		echo $$GUARDIAN_ENV; \
 		if [ "$$GUARDIAN_ENV" = "" ]; then \
 			DOT=""; \
 		else \
 			DOT="."; \
 		fi; \
-		echo $$DOT; \
 		case $$dir in \
 			logger-service) cp $$dir/configs/.env.logger$$DOT$$GUARDIAN_ENV $$dir/.env;; \
 			api-gateway) cp $$dir/configs/.env.gateway$$DOT$$GUARDIAN_ENV $$dir/.env;; \

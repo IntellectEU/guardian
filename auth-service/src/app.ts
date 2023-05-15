@@ -1,4 +1,3 @@
-import { fixtures } from '@helpers/fixtures';
 import { AccountService } from '@api/account-service';
 import { WalletService } from '@api/wallet-service';
 import {
@@ -42,9 +41,18 @@ Promise.all([
     await state.setServiceName('AUTH_SERVICE').setConnection(cn).init();
     state.updateState(ApplicationStates.INITIALIZING);
     try {
-        // Demo accounts will only be produced when DEMO=true on the root .env file
-        if (process.env.DEMO && process.env.DEMO === 'true') {
-            await fixtures();
+        // Include accounts for production builds only
+        if (process.env.NODE_ENV === 'production') {
+            import('./helpers/fixtures').then( async (module) => {
+                await module.fixtures();
+            });
+        }
+
+        // Include accounts for demo builds only
+        if (process.env.NODE_ENV === 'demo') {
+            import('./helpers/fixtures.demo').then( async (module) => {
+                await module.fixtures();
+            });
         }
 
         new Logger().setConnection(cn);

@@ -114,7 +114,7 @@ services:
       - ./configs/.env.${GUARDIAN_ENV}.guardian.system
     build:
       context: .
-      dockerfile: ./auth-service/Dockerfile
+      dockerfile: ./auth-service/Dockerfile${DEMO:+.demo}
     ports:
       - '5005:5005'
     depends_on:
@@ -135,7 +135,7 @@ services:
       - ./configs/.env.${GUARDIAN_ENV}.guardian.system
     build:
       context: .
-      dockerfile: ./api-gateway/Dockerfile
+      dockerfile: ./api-gateway/Dockerfile${DEMO:+.demo}
     expose:
       - 3002
       - 6555

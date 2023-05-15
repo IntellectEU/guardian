@@ -91,7 +91,6 @@ demoAPI.get('/push/randomKey', async (req: Request, res: Response) => {
     res.status(201).send({ taskId, expectation });
 });
 
-
 demoAPI.get('/registered-users', async (req: Request, res: Response, next: NextFunction) => {
     const users = new Users();
     const guardians = new Guardians();

@@ -30,7 +30,7 @@ enum OperationMode {
     styleUrls: ['./root-config.component.css']
 })
 export class RootConfigComponent implements OnInit {
-    demo: boolean = environment.displayDemoAccounts;
+    production: boolean = environment.production;
 
     @ViewChild('actionMenu') actionMenu: any;
 

@@ -41,7 +41,6 @@ import { mapAPI } from '@api/service/map';
 const PORT = process.env.PORT || 3002;
 const RAW_REQUEST_LIMIT = process.env.RAW_REQUEST_LIMIT || '1gb';
 const JSON_REQUEST_LIMIT = process.env.JSON_REQUEST_LIMIT || '1mb';
-const isDemoEnabled = process.env.DEMO === 'true';
 
 const restResponseTimeHistogram = new client.Histogram({
     name: 'api_gateway_rest_response_time_duration_seconds',
@@ -92,10 +91,6 @@ Promise.all([
         app.use('/artifacts', authorizationHelper, artifactAPI);
         app.use('/trust-chains/', authorizationHelper, trustChainsAPI);
         app.use('/external/', externalAPI);
-        // /demo/ will only be active when DEMO=true on the root .env file 
-        if (isDemoEnabled) {
-            app.use('/demo/', demoAPI);
-        }
         app.use('/ipfs', authorizationHelper, ipfsAPI);
         app.use('/logs', authorizationHelper, loggerAPI);
         app.use('/tasks', taskAPI);
@@ -106,6 +101,13 @@ Promise.all([
         app.use('/map', mapAPI);
         app.use('/themes', authorizationHelper, themesAPI);
         app.use('/metrics', metricsAPI);
+
+        // Include endpoints for demo builds only
+        if (process.env.NODE_ENV === 'demo') {
+          import('./api/service/demo').then(() => {
+            app.use('/demo', demoAPI);
+          });
+        }
 
         /**
          * @deprecated 2023-03-01

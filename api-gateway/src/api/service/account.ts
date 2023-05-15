@@ -24,16 +24,19 @@ accountAPI.get('/session', authorizationHelper, async (req: Request, res: Respon
     }
 });
 
-accountAPI.post('/register', validate(registerSchema()),async (req: Request, res: Response, next: NextFunction) => {
+const registerMiddlewares = process.env.NODE_ENV === 'demo' ? [validate(registerSchema())] :
+[authorizationHelper, permissionHelper(UserRole.STANDARD_REGISTRY), validate(registerSchema())];
+
+accountAPI.post('/register', registerMiddlewares, async (req: Request, res: Response, next: NextFunction) => {
     const users = new Users();
     try {
-        const { username, password } = req.body;
-        let { role } = req.body;
-        // @deprecated 2022-10-01
-        if (role === 'ROOT_AUTHORITY') {
-            role = UserRole.STANDARD_REGISTRY;
-        }
-        res.status(201).json(await users.registerNewUser(username, password, role));
+            const { username, password } = req.body;
+            let { role } = req.body;
+            // @deprecated 2022-10-01
+            if (role === 'ROOT_AUTHORITY') {
+                role = UserRole.STANDARD_REGISTRY;
+            }
+            res.status(201).json(await users.registerNewUser(username, password, role));
     } catch (error) {
         new Logger().error(error, ['API_GATEWAY']);
         if (error.message.includes('already exists')) {
