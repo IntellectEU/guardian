@@ -27,4 +27,12 @@ if (!process.env.OVERRIDE || process.env.OVERRIDE === 'false'){
         }
     }
 }
+// set here derived env variable to be reused
+// in worker.ts
+//>>> ******************
+let ApiKeyIPFSPath = 'apikey/ipfs';
+process.env.ENV_AWARE_APIKEYIPFSPATH = process.env.VAULT_PROVIDER !== 'database'?
+                                `${process.env.GUARDIAN_ENV}/${process.env.HEDERA_NET}/${ApiKeyIPFSPath}`:
+                                ApiKeyIPFSPath;
+//>>> ******************
 console.log('Charged Environment',process.env,'\r\n___ . ___');

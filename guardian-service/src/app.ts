@@ -97,6 +97,7 @@ Promise.all([
     const secretManager = SecretManager.New();
     await new OldSecretManager().setConnection(cn).init();
     let { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets('keys/operator');
+    //>>> let { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets(process.env.ENV_AWARE_KEYOPEPATH);
     if (!OPERATOR_ID) {
         OPERATOR_ID = process.env.OPERATOR_ID;
         OPERATOR_KEY = process.env.OPERATOR_KEY;
@@ -104,6 +105,10 @@ Promise.all([
             OPERATOR_ID,
             OPERATOR_KEY
         })
+        //>>> await secretManager.setSecrets(process.env.ENV_AWARE_KEYOPEPATH, {
+        //     OPERATOR_ID,
+        //     OPERATOR_KEY
+        //>>> })
 
     }
 

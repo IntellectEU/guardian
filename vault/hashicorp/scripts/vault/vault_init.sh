@@ -6,7 +6,7 @@ source $PWD/vault/hashicorp/.env
 BASE_DIR=$PWD/vault/hashicorp
 
 VAULT_CLIENT_CERT_PATH=$CERT_REPOSITORY_DIR/vault/client
-VAULT_CACERT=$VAULT_CLIENT_CERT_PATH/ca.crt
+VAULT_CA_CERT=$VAULT_CLIENT_CERT_PATH/ca.crt
 VAULT_CLIENT_CERT=$VAULT_CLIENT_CERT_PATH/tls.crt
 VAULT_CLIENT_KEY=$VAULT_CLIENT_CERT_PATH/tls.key
 
@@ -25,13 +25,13 @@ read() {
 
   if [ -z "$X_VAULT_TOKEN" ]; then
     curl -s \
-      --cacert $VAULT_CACERT \
+      --cacert $VAULT_CA_CERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       $URL
   else
     curl -s \
-      --cacert $VAULT_CACERT \
+      --cacert $VAULT_CA_CERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -50,14 +50,14 @@ write() {
 
   if [ -z "$X_VAULT_TOKEN" ]; then
     curl -k -s --request POST \
-      --cacert $VAULT_CACERT \
+      --cacert $VAULT_CA_CERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       --data "$DATA" \
       $URL
   else
     curl -k -s --request POST \
-      --cacert $VAULT_CACERT \
+      --cacert $VAULT_CA_CERT \
       --cert $VAULT_CLIENT_CERT \
       --key $VAULT_CLIENT_KEY \
       --header "X-Vault-Token: $X_VAULT_TOKEN" \

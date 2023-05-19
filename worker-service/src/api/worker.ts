@@ -120,6 +120,17 @@ export class Worker extends NatsService {
                 this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
             });
 
+        //>>> secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH).
+            // then(secrets => {
+            //     const { IPFS_STORAGE_API_KEY } = secrets;
+            //     this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
+        //>>> });
+        // or better:
+        //>>> IPFS_STORAGE_API_KEY = await secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH);
+        //>>> this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
+        
+        
+
         this.logger = new Logger();
 
         this.minPriority = parseInt(process.env.MIN_PRIORITY, 10);
@@ -203,6 +214,10 @@ export class Worker extends NatsService {
             await secretManager.setSecrets('apikey/ipfs', {
                 IPFS_STORAGE_API_KEY: msg.ipfsStorageApiKey
             });
+            //>>> await secretManager.setSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH, { 
+            //     IPFS_STORAGE_API_KEY: msg.ipfsStorageApiKey
+            //>>>  });
+            
             try {
                 this.ipfsClient = new IpfsClient(msg.ipfsStorageApiKey);
                 const validator = new ValidateConfiguration();

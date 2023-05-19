@@ -74,21 +74,33 @@ export class HcpVaultSecretManagerConfigs implements SecretManagerConfigsBase {
    * @static
    */
   static getConfigs(): IHcpVaultSecretManagerConfigs {
-    return {
+    console.log(">>> getConfigs(): path.join(process.cwd()");
+    console.log(process.cwd(), process.env.VAULT_CA_CERT);
+    let pippo = {
       apiVersion: process.env.VAULT_API_VERSION,
       endpoint: process.env.VAULT_ADDRESS,
       tlsOptions: {
         ca: fs.readFileSync(
-          path.join(process.cwd(), process.env.VAULT_CA_CERT)),
+          './tls/vault/client/ca.crt'),
         cert: fs.readFileSync(
-          path.join(process.cwd(), process.env.VAULT_CLIENT_CERT)),
+          './tls/vault/client/tls.crt'),
         key: fs.readFileSync(
-          path.join(process.cwd(), process.env.VAULT_CLIENT_KEY)),
+          './tls/vault/client/tls.key'),
       },
+      // tlsOptions: {
+      //   ca: fs.readFileSync(
+      //     path.join(process.cwd(), process.env.VAULT_CA_CERT)),
+      //   cert: fs.readFileSync(
+      //     path.join(process.cwd(), process.env.VAULT_CLIENT_CERT)),
+      //   key: fs.readFileSync(
+      //     path.join(process.cwd(), process.env.VAULT_CLIENT_KEY)),
+      // },
       approleCredential: {
         roleId: process.env.VAULT_APPROLE_ROLE_ID,
         secretId: process.env.VAULT_APPROLE_SECRET_ID,
       }
     } as IHcpVaultSecretManagerConfigs;
+    console.log(">>> pippo:",pippo);
+    return pippo;
   }
 }

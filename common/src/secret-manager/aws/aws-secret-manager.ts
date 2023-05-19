@@ -72,6 +72,7 @@ export class AwsSecretManager implements SecretManagerBase {
    * @public
    */
   public async getSecrets(path: string): Promise<any> {
+    console.log(">>> AwsSecretManager.getSecrets");
     try {
       const response = await this.client.send(
         new GetSecretValueCommand({

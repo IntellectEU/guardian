@@ -50,10 +50,13 @@ export class AccountService extends NatsService{
      * Register listeners
      */
     registerListeners(): void {
+        console.log(">>> registerListeners ENV_AWARE_SECAUTHPATH *:", process.env.ENV_AWARE_SECAUTHPATH);
         this.getMessages<IGetUserByTokenMessage, User>(AuthEvents.GET_USER_BY_TOKEN, async (msg) => {
             const { token } = msg;
             const secretManager = SecretManager.New();
             const {ACCESS_TOKEN_SECRET} = await secretManager.getSecrets('secretkey/auth')
+            
+            //>>> const { ACCESS_TOKEN_SECRET } = await secretManager.getSecrets(process.env.ENV_AWARE_SECAUTHPATH);
 
             try {
                 const decryptedToken = await util.promisify<string, any, Object, IAuthUser>(verify)(token, ACCESS_TOKEN_SECRET, {});
@@ -99,6 +102,7 @@ export class AccountService extends NatsService{
 
                 const secretManager = SecretManager.New();
                 const {ACCESS_TOKEN_SECRET} = await secretManager.getSecrets('secretkey/auth')
+                //>>> const { ACCESS_TOKEN_SECRET } = await secretManager.getSecrets(process.env.ENV_AWARE_SECAUTHPATH);
 
                 const user = await new DataBaseHelper(User).findOne({ username });
                 if (user && passwordDigest === user.password) {

@@ -47,10 +47,11 @@ export class SecretManager {
    * @returns Secret Manager
    */
   static New(secretManagerType?: SecretManagerType): SecretManagerBase {
+    console.log(">>> 0 New",secretManagerType);
     secretManagerType = SecretManager.getSecretManagerType(secretManagerType)
-
+    console.log(">>> 1 secretManagerType",secretManagerType);
     const configs = SecretManagerConfigs.getConfig(secretManagerType)
-
+    console.log(">>> 2 configs",configs);
     switch (secretManagerType) {
       case SecretManagerType.HCP_VAULT:
         return new HcpVaultSecretManager(configs as IHcpVaultSecretManagerConfigs)

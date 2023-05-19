@@ -14,6 +14,7 @@ import * as process from 'process';
 Promise.all([
     MessageBrokerChannel.connect('WORKERS_SERVICE')
 ]).then(async values => {
+    console.log(">>> values", values);
     const channelName = (process.env.SERVICE_CHANNEL || `worker.${Date.now()}`).toUpperCase()
     const [cn] = values;
     const channel = new MessageBrokerChannel(cn, 'worker');
@@ -32,11 +33,20 @@ Promise.all([
             clearInterval(timer);
         }
         const secretManager = SecretManager.New();
-        let {IPFS_STORAGE_API_KEY} = await secretManager.getSecrets('apikey/ipfs');
+        let IPFS_STORAGE_API_KEY = process.env.IPFS_STORAGE_API_KEY;
+        console.log(">>> 0 now I have IPFS_STORAGE_API_KEY", IPFS_STORAGE_API_KEY);
+        IPFS_STORAGE_API_KEY = await secretManager.getSecrets('apikey/ipfs');
+        //>>> IPFS_STORAGE_API_KEY = await secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH);
+        console.log(">>> 1 now I have IPFS_STORAGE_API_KEY", IPFS_STORAGE_API_KEY);
         if (!IPFS_STORAGE_API_KEY) {
+            console.log(">>> !IPFS_STORAGE_API_KEY");
             IPFS_STORAGE_API_KEY= process.env.IPFS_STORAGE_API_KEY
             await secretManager.setSecrets('apikey/ipfs', { IPFS_STORAGE_API_KEY });
+            //>>> await secretManager.setSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH, { IPFS_STORAGE_API_KEY });
+            console.log(">>> set IPFS_STORAGE_API_KEY in secretManager", IPFS_STORAGE_API_KEY);
         }
+
+        console.log(">>> 2 now I have IPFS_STORAGE_API_KEY", IPFS_STORAGE_API_KEY);
 
         HederaSDKHelper.setTransactionLogSender(async (data) => {
             await channel.publish(`guardians.transaction-log-event`, data);

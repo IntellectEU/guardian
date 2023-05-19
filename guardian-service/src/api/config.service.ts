@@ -51,6 +51,11 @@ export async function configAPI(
                 OPERATOR_ID: settings.operatorId,
                 OPERATOR_KEY: settings.operatorKey
             });
+            //>>> await secretManager.setSecrets(process.env.ENV_AWARE_KEYOPEPATH, {
+            //     OPERATOR_ID,
+            //     OPERATOR_KEY
+            //>>> })
+            
             const validator = new ValidateConfiguration();
             await validator.validate();
             await new Workers().updateSettings({
@@ -71,7 +76,8 @@ export async function configAPI(
         try {
             const secretManager = SecretManager.New();
             const { OPERATOR_ID } = await secretManager.getSecrets('keys/operator');
-
+            //>>> let { OPERATOR_ID } = await secretManager.getSecrets(process.env.ENV_AWARE_KEYOPEPATH);
+    
             return new MessageResponse({
                 operatorId: OPERATOR_ID,
                 // operatorKey: OPERATOR_KEY

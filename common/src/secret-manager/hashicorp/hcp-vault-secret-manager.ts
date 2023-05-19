@@ -55,6 +55,7 @@ export class HcpVaultSecretManager implements SecretManagerBase {
    * @public
    */
   async getSecrets(path: string): Promise<any> {
+    console.log(">>> HCP-vault.getSecrets");
     await this.loginByApprole()
     try {
       const result = await this.vault.read(this.getSecretId(path))

@@ -41,6 +41,7 @@ export class SecretManagerConfigs {
    * @throws Error if the secret manager type is invalid
    */
   static getConfig(secretmanagerType: SecretManagerType): ISecretManagerConfigs {
+    console.log(">>> getConfig secretmanagerType *", secretmanagerType);
     switch (secretmanagerType) {
       case SecretManagerType.HCP_VAULT:
         return HcpVaultSecretManagerConfigs.getConfigs()

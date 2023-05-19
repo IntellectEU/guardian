@@ -1,0 +1,319 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:6.0.3
+    command: "--setParameter allowDiskUseByDefault=true"
+    restart: always
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    expose:
+      - 8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_SITE_BASEURL: /mongo-admin
+    depends_on:
+      - mongo
+
+  ipfs-node:
+    image: ipfs/kubo:v0.18.1
+    ports:
+      - "5001:5001"
+      - "5002:5002"
+      - "4001:4001"
+      - "4002:4002"
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./runtime-data/ipfs/staging:/export:rw
+      - ./runtime-data/ipfs/data:/data/ipfs:rw
+
+  api-docs:
+    build:
+      context: .
+      dockerfile: ./api-docs/Dockerfile
+    expose:
+      - 3001
+
+  message-broker:
+    image: nats:2.9.8
+    expose:
+      - 4222
+    ports:
+      - '8222:8222'
+    command: '--http_port 8222'
+
+  consul:
+    image: consul:1.12.4
+    container_name: consul
+    restart: "on-failure"
+    volumes:
+      - ./vault/hashicorp/consul/config/consul.json:/consul/config/consul.json:ro
+      - ./vault/hashicorp/certs/consul/tls:/consul/tls
+    ports:
+      - 8500:8500
+    entrypoint:
+      - sh
+      - -ca
+      - |
+        chown consul:consul /consul/tls
+        consul agent -config-file=/consul/config/consul.json
+        
+  vault:
+    image: vault:1.12.2
+    container_name: vault
+    restart: "on-failure"
+    tty: true
+    expose:
+      - 8200
+    ports:
+      - 8200:8200
+    environment:
+      ROOT_TOKEN_PATH: /vault/.root
+      VAULT_ADDR: https://vault:8200
+      VAULT_CA_CERT: /vault/tls/ca.crt
+      VAULT_CLIENT_CERT: /vault/client/tls/tls.crt
+      VAULT_CLIENT_KEY: /vault/client/tls/tls.key
+    volumes:
+      - ./vault/hashicorp/vault/config/vault.json:/vault/config/vault.json
+      - ./vault/hashicorp/vault/repository/policies:/vault/policies
+      - ./vault/hashicorp/vault/repository/data:/vault/data
+      - ./vault/hashicorp/vault/repository/logs:/vault/logs
+      - ./vault/hashicorp/certs/vault/tls:/vault/tls:ro
+      - ./vault/hashicorp/certs/vault/client:/vault/client/tls
+    entrypoint:
+      - sh
+      - -c
+      - |
+        vault server -config=/vault/config/vault.json
+    healthcheck:
+      test: [ "CMD", "curl", "-i", "https://127.0.0.1:8200/v1/sys/health?drsecondarycode=200" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    depends_on:
+      - consul
+      
+  logger-service:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./logger-service/Dockerfile
+    depends_on:
+      - message-broker
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+
+  worker-service-1:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./worker-service/Dockerfile
+    depends_on:
+      - ipfs-node
+      - auth-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+      - SERVICE_CHANNEL:"worker.1"
+    expose:
+      - 6555
+
+  worker-service-2:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./worker-service/Dockerfile
+    depends_on:
+      - ipfs-node
+      - auth-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+      - SERVICE_CHANNEL="worker.2"
+    expose:
+      - 6555
+
+  auth-service:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    ports:
+      - '5005:5005'
+    depends_on:
+      - mongo
+      - vault
+      - message-broker
+      - logger-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+    expose:
+      - 6555
+      - 5005
+
+  api-gateway:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    expose:
+      - 3002
+      - 6555
+    depends_on:
+      - mongo
+      - message-broker
+      - guardian-service
+      - auth-service
+      - logger-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+
+  policy-service:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./policy-service/Dockerfile
+    ports:
+      - "5006:5006"
+    depends_on:
+      - mongo
+      - message-broker
+      - auth-service
+      - logger-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+    expose:
+      - 50000-60000
+      - 5006
+
+
+  guardian-service:
+    env_file:
+      - ./configs/.env.${GUARDIAN_ENV}.guardian.system
+    build:
+      context: .
+      dockerfile: ./guardian-service/Dockerfile
+    ports:
+      - "5007:5007"
+    depends_on:
+      - mongo
+      - message-broker
+      - auth-service
+      - logger-service
+      - worker-service-1
+      - worker-service-2
+      - policy-service
+    environment:
+      - GUARDIAN_ENV=${GUARDIAN_ENV}
+    expose:
+      - 6555
+      - 5007
+
+  application-events:
+    build:
+      context: .
+      dockerfile: application-events/Dockerfile
+    expose:
+      - 3012
+    ports:
+      - "3012:3012"
+    depends_on:
+      - mongo
+      - message-broker
+      - guardian-service
+      - auth-service
+      - logger-service
+      
+  mrv-sender:
+    build:
+      context: .
+      dockerfile: ./mrv-sender/Dockerfile
+    expose:
+      - 3003
+      - 5008
+    ports:
+      - "5008:5008"
+
+  topic-viewer:
+    build:
+      context: .
+      dockerfile: ./topic-viewer/Dockerfile
+    expose:
+      - 3006
+      - 5009
+    ports:
+      - "5009:5009"
+
+  web-proxy:
+    build:
+      context: .
+      dockerfile: ./web-proxy/Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - guardian-service
+      - auth-service
+      - api-gateway
+      - api-docs
+      - mrv-sender
+      - mongo-express
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SERVER_HTTP_PORT=9080
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/dashboards/prometheus-dashboard.json
+    ports:
+      - "9080:9080"
+    networks:
+      - monitoring
+      
+volumes:
+  mongo:
+  prometheus_data: {}
+  grafana_data: {}
+  # volume-guardian-service:
+  # volume-ui-service:
+  # volume-mrv-sender:
+  #  volume-message-broker:
+
+networks:
+  monitoring:
+    driver: bridge

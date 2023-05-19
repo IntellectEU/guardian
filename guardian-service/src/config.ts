@@ -37,4 +37,12 @@ if (!process.env.OVERRIDE || process.env.OVERRIDE === 'false'){
         }
     }
 }
+// set here derived env variable to be reused
+// in config.service.ts and in demo.service.ts in all common library
+//>>> ******************
+let keyOpePath = 'keys/operator';
+process.env.ENV_AWARE_KEYOPEPATH = process.env.VAULT_PROVIDER !== 'database'?
+                                `${process.env.GUARDIAN_ENV}/${process.env.HEDERA_NET}/${keyOpePath}`:
+                                keyOpePath;
+//>>> ******************
 console.log('Charged Environment',process.env,'\r\n___ . ___');
