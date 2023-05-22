@@ -47,14 +47,14 @@ export async function configAPI(
                 throw new Error('OPERATOR_KEY: ' + error.message);
             }
 
-            await secretManager.setSecrets('keys/operator', {
-                OPERATOR_ID: settings.operatorId,
-                OPERATOR_KEY: settings.operatorKey
-            });
-            //>>> await secretManager.setSecrets(process.env.ENV_AWARE_KEYOPEPATH, {
-            //     OPERATOR_ID,
-            //     OPERATOR_KEY
-            //>>> })
+            // await secretManager.setSecrets('keys/operator', {
+            //     OPERATOR_ID: settings.operatorId,
+            //     OPERATOR_KEY: settings.operatorKey
+            // });
+            await secretManager.setSecrets(process.env.ENV_AWARE_KEYOPEPATH, {
+                OPERATOR_ID,
+                OPERATOR_KEY
+            })
             
             const validator = new ValidateConfiguration();
             await validator.validate();
@@ -75,8 +75,8 @@ export async function configAPI(
     ApiResponse(MessageAPI.GET_SETTINGS, async (msg) => {
         try {
             const secretManager = SecretManager.New();
-            const { OPERATOR_ID } = await secretManager.getSecrets('keys/operator');
-            //>>> let { OPERATOR_ID } = await secretManager.getSecrets(process.env.ENV_AWARE_KEYOPEPATH);
+            // const { OPERATOR_ID } = await secretManager.getSecrets('keys/operator');
+            let { OPERATOR_ID } = await secretManager.getSecrets(process.env.ENV_AWARE_KEYOPEPATH);
     
             return new MessageResponse({
                 operatorId: OPERATOR_ID,

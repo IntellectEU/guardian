@@ -114,20 +114,20 @@ export class Worker extends NatsService {
     ) {
         super();
         const secretManager = SecretManager.New()
-        secretManager.getSecrets('apikey/ipfs').
-            then(secrets => {
-                const { IPFS_STORAGE_API_KEY } = secrets;
-                this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
-            });
+        // secretManager.getSecrets('apikey/ipfs').
+        //     then(secrets => {
+        //         const { IPFS_STORAGE_API_KEY } = secrets;
+        //         this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
+        //     });
 
-        //>>> secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH).
-            // then(secrets => {
-            //     const { IPFS_STORAGE_API_KEY } = secrets;
-            //     this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
-        //>>> });
+        // secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH).
+        //     then(secrets => {
+        //         const { IPFS_STORAGE_API_KEY } = secrets;
+        //         this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
+        // });
         // or better:
-        //>>> IPFS_STORAGE_API_KEY = await secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH);
-        //>>> this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
+        IPFS_STORAGE_API_KEY = await secretManager.getSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH);
+        this.ipfsClient = new IpfsClient(IPFS_STORAGE_API_KEY);
         
         
 
@@ -211,12 +211,12 @@ export class Worker extends NatsService {
 
         this.subscribe(WorkerEvents.UPDATE_SETTINGS, async (msg: any) => {
             const secretManager = SecretManager.New();
-            await secretManager.setSecrets('apikey/ipfs', {
+            // await secretManager.setSecrets('apikey/ipfs', {
+            //     IPFS_STORAGE_API_KEY: msg.ipfsStorageApiKey
+            // });
+            await secretManager.setSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH, { 
                 IPFS_STORAGE_API_KEY: msg.ipfsStorageApiKey
             });
-            //>>> await secretManager.setSecrets(process.env.ENV_AWARE_APIKEYIPFSPATH, { 
-            //     IPFS_STORAGE_API_KEY: msg.ipfsStorageApiKey
-            //>>>  });
             
             try {
                 this.ipfsClient = new IpfsClient(msg.ipfsStorageApiKey);

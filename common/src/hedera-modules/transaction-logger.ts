@@ -168,10 +168,10 @@ export class TransactionLogger extends NatsService {
                     keyOpePath = process.env.VAULT_PROVIDER !== 'database'?
                                  `${process.env.GUARDIAN_ENV}/${process.env.HEDERA_NET}/${keyOpePath}`:
                                  keyOpePath;
-                    console.log(">>> transactionLog keyOpepath:", keyOpePath);
+                    // console.log(">>> transactionLog keyOpepath:", keyOpePath);
                     //>>> ******************
-                    const { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets('keys/operator');
-                    //>>> const { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets(keyOpePath);
+                    // const { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets('keys/operator');
+                    const { OPERATOR_ID, OPERATOR_KEY } = await secretManager.getSecrets(keyOpePath);
                     const workers = new Workers();
                     const balance = await workers.addNonRetryableTask({
                         type: WorkerTaskType.GET_USER_BALANCE,
