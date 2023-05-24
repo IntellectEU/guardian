@@ -91,7 +91,11 @@ Promise.all([
         app.use('/artifacts', authorizationHelper, artifactAPI);
         app.use('/trust-chains/', authorizationHelper, trustChainsAPI);
         app.use('/external/', externalAPI);
-        app.use('/demo/', demoAPI);
+        /// #if process.env.NODE_ENV == 'demo'
+        import('@api/service/demo').then(({ demoAPI: demoApiRoutes }) => {
+            app.use('/demo', demoApiRoutes);
+        });
+        /// #endif
         app.use('/ipfs', authorizationHelper, ipfsAPI);
         app.use('/logs', authorizationHelper, loggerAPI);
         app.use('/tasks', taskAPI);

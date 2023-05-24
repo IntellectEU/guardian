@@ -8,6 +8,7 @@
     "experimentalDecorators": true,
     "inlineSourceMap": false,
     "skipLibCheck": true,
+    "preserveConstEnums": true,
     "lib": [
       "es5",
       "es6"
