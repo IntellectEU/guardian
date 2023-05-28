@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:3002'
 let tokens = [
 ];
 
-async function createAccount(username, password, role) {
+async function CreateAccount(username, password, role) {
     let account = await axios.post(
         GetURL('accounts', 'register'),
         {
@@ -15,7 +15,8 @@ async function createAccount(username, password, role) {
         },
         {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GetToken('StandardRegistry')}`,
             }
         }
     );
@@ -29,6 +30,64 @@ async function createAccount(username, password, role) {
     delete account.data.createDate;
     delete account.data.updateDate;
     delete account.data.parent;
+}
+
+async function GenerateTokenStandardRegistry() {
+    tokens = [];
+    let result;
+    result = await axios.post(
+        GetURL('accounts', 'login'),
+        JSON.stringify({
+            username: 'StandardRegistry',
+            password: 'test'
+        }),
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+    SaveToken(result.data.username, result.data.accessToken);
+}
+
+async function AccountsAlreadyExist() {
+    try {
+        const result = await axios.get(GetURL('accounts', ''), {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GetToken('StandardRegistry')}`,
+            }
+        });
+        
+        const expectedData = [
+            { username: 'Installer' },
+            { username: 'Installer2' },
+            { username: 'Registrant' },
+            { username: 'VVB' },
+            { username: 'ProjectProponent' }
+        ];
+        
+        const modifiedData = result.data.map(function(v) {
+            delete v.did;
+            delete v.parent;
+            return v;
+        });
+        
+        if (expectedData.every(function(expected) {
+            return modifiedData.some(function(actual) {
+                return JSON.stringify(actual) === JSON.stringify(expected);
+            });
+        })) {
+            console.log('Accounts already exist');
+            return true;
+        } else {
+            console.error('Accounts do not exist');
+            return false;
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+        return false;
+    }
 }
 
 async function GenerateTokens() {
@@ -123,5 +182,7 @@ module.exports = {
     GetToken,
     GenerateTokens,
     GenerateUUIDv4,
-    createAccount
+    CreateAccount,
+    GenerateTokenStandardRegistry,
+    AccountsAlreadyExist
 }

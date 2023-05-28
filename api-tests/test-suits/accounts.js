@@ -155,13 +155,17 @@ function Accounts() {
     it('/accounts/register', async function() {
         let result;
 
+        const header = (process.env.DEMO && process.env.DEMO == 'true') ? {
+            'Content-Type': 'application/json'
+        } : {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GetToken('StandardRegistry')}`,
+        };
         result = await axios.post(
             GetURL('accounts', 'register'),
             {username: 'apiTest', password: 'apiTest', password_confirmation: 'apiTest', role: 'USER'},
             {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: header
             }
         );
         delete result.data.password;

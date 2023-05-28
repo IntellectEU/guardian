@@ -23,10 +23,12 @@ console.log(readEnvFile('./worker-service/.env'));
 
 const appEnv = readEnvFile('.env');
 let demo = '';
+let nodeEnv = 'production';
 
 // If DEMO=true in the root .env file, ensures that the frontend will build the demo instead of production
 if (appEnv.DEMO && appEnv.DEMO === 'true') {
   demo = ':demo';
+  nodeEnv = "demo";
 }
 
 module.exports = {
@@ -43,7 +45,7 @@ module.exports = {
     script: 'npm run start',
     cwd: './api-gateway/dist',
     env: {
-      DEMO: appEnv.DEMO,
+      NODE_ENV: nodeEnv,
       ...readEnvFile('./api-gateway/.env')
     }
   },
@@ -53,7 +55,7 @@ module.exports = {
     cwd: './auth-service/dist',
     env: {
       SECRET_MANAGER: appEnv.SECRET_MANAGER,
-      DEMO: appEnv.DEMO,
+      NODE_ENV: nodeEnv,
       ...readEnvFile('./auth-service/.env')
     }
   },
