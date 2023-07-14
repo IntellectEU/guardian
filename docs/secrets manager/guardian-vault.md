@@ -88,3 +88,19 @@ Guardian is supporting Azure Vault Secrets Manager to handle securely the secret
 3. Configure Networking, Add Tags and create the Vault.
 
 4. Now in the directory of auth-service, guardian-service, policy-service and worker-service set __AZURE_VAULT_NAME__ environment variable by the name chosen as Vault previously.
+
+### Azure Vault Credntials
+
+Credentials are required in order to access Azure Vault. The credentials and how to acquire them through Azure Portal is mentioned below:
+
+- Search for and select Azure Active Directory.
+- Select App registrations and select your application from the list.
+- Find Tenant Id and store it as __AZURE_TENANT_ID__ 
+- At the same page find Client id and store it as __AZURE_CLIENT_SECRET__
+- Select Certificates & secrets.
+- Select Client secrets, and then Select New client secret.
+- Provide a description of the secret, and a duration.
+- Select Add
+- Once you've saved the client secret, the value of the client secret is displayed. Store this value as __AZURE_CLIENT_ID__ and keep it safe.
+
+Guardian requires these values to be populated inside environment variable of the container. One simple way is to set them as environments of services inside docker compose file.
